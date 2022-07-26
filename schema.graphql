@@ -1,0 +1,281 @@
+"""Exposes a URL that specifies the behavior of this scalar."""
+directive @specifiedBy(
+  """The URL that specifies the behavior of this scalar."""
+  url: String!
+) on SCALAR
+
+"""
+Direct the client to resolve this field locally, either from the cache or local resolvers.
+"""
+directive @client(
+  """
+  When true, the client will never use the cache for this value. See
+  https://www.apollographql.com/docs/react/essentials/local-state/#forcing-resolvers-with-clientalways-true
+  """
+  always: Boolean
+) on FIELD | FRAGMENT_DEFINITION | INLINE_FRAGMENT
+
+"""
+Export this locally resolved field as a variable to be used in the remainder of this query. See
+https://www.apollographql.com/docs/react/essentials/local-state/#using-client-fields-as-variables
+"""
+directive @export(
+  """The variable name to export this field as."""
+  as: String!
+) on FIELD
+
+"""
+Specify a custom store key for this result. See
+https://www.apollographql.com/docs/react/advanced/caching/#the-connection-directive
+"""
+directive @connection(
+  """Specify the store key."""
+  key: String!
+
+  """
+  An array of query argument names to include in the generated custom store key.
+  """
+  filter: [String!]
+) on FIELD
+
+type Bookmark {
+  id: ID!
+  user: User!
+  story: Story!
+  createdAt: Float!
+}
+
+type Category {
+  id: ID!
+  name: String!
+  slug: String!
+  content: String
+}
+
+type Chapter {
+  id: ID!
+  name: String!
+  slug: String!
+  story: Story!
+  avatar: String
+  note: String
+  content: [ChapterContent!]!
+  countViews: Int!
+  countComments: Int!
+  order: Int!
+  createdAt: Float!
+}
+
+type ChapterContent {
+  id: ID!
+  storage: String!
+  content: String!
+}
+
+input CheckBookmarkFilter {
+  story: ID!
+}
+
+input CountStoriesFilter {
+  """Filter by status"""
+  status: [StoryStatus!]
+  authors: String
+  teams: String
+  user: ID
+  category: ID
+}
+
+input CreateCategoryInput {
+  name: String!
+  content: String!
+}
+
+input CreateChapterInput {
+  story: ID!
+  name: String!
+  avatar: String
+  note: String = ""
+  content: [String!]!
+}
+
+input CreateStoryInput {
+  name: String!
+  content: String = ""
+  avatar: String!
+  authors: String = ""
+  teams: String = ""
+  status: StoryStatus = ON_GOING
+
+  """Mảng ID thể loại"""
+  categories: [String!]
+}
+
+"""Nếu truyền story thì sẽ là public query"""
+input GetBookmarksFilter {
+  """Sắp xếp của bình luận"""
+  sort: String!
+  limit: Int!
+  offset: Int!
+  story: ID
+}
+
+input GetChaptersFilter {
+  """Sắp xếp của bình luận"""
+  sort: String
+  limit: Int
+  offset: Int
+  story: ID
+}
+
+input GetHistoriesFilter {
+  """Sắp xếp của bình luận"""
+  sort: String!
+  limit: Int!
+  offset: Int!
+}
+
+input GetHistoryFilter {
+  story: ID!
+}
+
+input GetStoriesFilter {
+  """Sắp xếp của bình luận"""
+  sort: String!
+  limit: Int!
+  offset: Int!
+
+  """Filter by status"""
+  status: [StoryStatus!]
+  authors: String
+  teams: String
+  user: ID
+  category: ID
+}
+
+type History {
+  id: ID!
+  user: User!
+  story: Story!
+  chapter: Chapter!
+  updatedAt: Float!
+}
+
+type Mutation {
+  toogleBookmark(input: ToggleBookmarkInput!): Bookmark
+  deleteBookmarks(input: RemoveBookmarksInput!): [Bookmark!]!
+  createCategory(input: CreateCategoryInput!): Category!
+  updateCategory(input: UpdateCategoryInput!): Category!
+  createChapter(input: CreateChapterInput!): Chapter!
+  updateChapter(input: UpdateChapterInput!): Chapter!
+  deleteHistories(input: RemoveHistoriesInput!): [History!]!
+  createStory(input: CreateStoryInput!): Story!
+  updateStory(input: UpdateStoryInput!): Story!
+}
+
+type Query {
+  bookmark(input: CheckBookmarkFilter!): Bookmark
+  bookmarks(filter: GetBookmarksFilter!): [Bookmark!]!
+  categories: [Category!]!
+  category(category: String!): Category!
+  chapter(chapter: String!): Chapter!
+  chapters(filter: GetChaptersFilter!): [Chapter!]!
+  histories(filter: GetHistoriesFilter!): [History!]!
+  history(filter: GetHistoryFilter!): History
+  story(slug: String!): Story!
+  stories(filter: GetStoriesFilter!): [Story!]!
+  countStories(filter: CountStoriesFilter!): Int!
+  someStories(filter: SomeStoriesFilter!): [Story!]!
+  me: User!
+  testUser: User!
+}
+
+input RemoveBookmarksInput {
+  bookmarks: ID!
+}
+
+input RemoveHistoriesInput {
+  histories: [ID!]!
+}
+
+enum Role {
+  USER
+  AUTHOR
+  ADMIN
+  SP_ADMIN
+}
+
+input SomeStoriesFilter {
+  size: Int!
+
+  """Filter by status"""
+  status: [StoryStatus!]
+  authors: String
+  teams: String
+  user: ID
+  category: ID
+}
+
+type Story {
+  id: ID!
+  name: String!
+  slug: String!
+  avatar: String!
+  content: String!
+  authors: String!
+  teams: String!
+  status: StoryStatus!
+  createdAt: Float!
+  updatedAt: Float!
+  user: User!
+  categories: [Category!]!
+}
+
+enum StoryStatus {
+  ON_GOING
+  END
+  DROP
+}
+
+input ToggleBookmarkInput {
+  story: ID!
+}
+
+input UpdateCategoryInput {
+  name: String
+  content: String
+  id: ID!
+}
+
+input UpdateChapterInput {
+  story: ID
+  name: String
+  avatar: String
+  note: String = ""
+  content: [String!]
+  id: ID!
+}
+
+input UpdateStoryInput {
+  name: String
+  content: String = ""
+  avatar: String
+  authors: String = ""
+  teams: String = ""
+  status: StoryStatus = ON_GOING
+
+  """Mảng ID thể loại"""
+  categories: [String!]
+  id: ID!
+}
+
+type User {
+  id: ID!
+
+  """Firebase ID"""
+  uid: String!
+  name: String!
+  slug: String!
+  role: Role!
+  avatar: String
+  createdAt: Float!
+}

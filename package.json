@@ -18,7 +18,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "apollo:pull": "npx apollo client:download-schema --endpoint=http://localhost:3000/graphql schema.graphql",
+    "apollo:publish": "APOLLO_KEY=service:GateWay-ads7d:G1IbtKN7DrPTFwtD0lqMzQ rover subgraph publish GateWay-ads7d@current --name products --schema ./schema.graphql  --routing-url http://products.prod.svc.cluster.local:4001/graphql"
   },
   "dependencies": {
     "@apollo/gateway": "^2.0.5",
