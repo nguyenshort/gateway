@@ -40,6 +40,7 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
                             { name: 'histories', url: 'http://localhost:3004/graphql' },
                             { name: 'stories', url: 'http://localhost:3005/graphql' },
                             { name: 'users', url: 'http://localhost:3006/graphql' },
+                            { name: 'counters', url: 'http://localhost:3007/graphql' },
                         ]
                     }),
                     buildService({ name, url }) {
